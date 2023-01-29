@@ -1,22 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Suspense, useLayoutEffect } from "react";
 import { Outlet } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen";
 import {
   Avatar,
   AppBar,
+  Box,
   Toolbar,
   IconButton,
   Typography,
   Menu,
   MenuItem,
   Button,
-  Popover
+  Popover,
+  CardHeader,
+  Card,
+  CardContent,
 } from "@mui/material";
 import EMobiledataIcon from "@mui/icons-material/EMobiledata";
+import { useAuth } from "../context/AuthContext";
 
 import { Stack } from "@mui/system";
 const SharedLayout = () => {
+  const { user, handleSignOut } = useAuth();
+  const [details, setDetails] = useState(false);
   const [anchor, setAnchor] = useState(null);
   const open = Boolean(anchor);
   const handleClick = (event) => {
@@ -44,21 +51,13 @@ const SharedLayout = () => {
 
           <Stack direction="row" spacing={2}>
             <Button id="profile-button" onClick={handleClick}>
-              <Avatar>H</Avatar>
+              <Avatar src={user?.photoURL}>{user?.displayName[0]}</Avatar>
             </Button>
           </Stack>
-          <Menu
-            id="profile-menu"
+          <Popover
             anchorEl={anchor}
             open={open}
             onClose={handleClose}
-          >
-            <MenuItem>Logout</MenuItem>
-          </Menu>
-          <Popover
-          anchorEl={anchor}
-          open={open}
-          onClose={handleClose}
             anchorOrigin={{
               vertical: "bottom",
               horizontal: "right",
@@ -68,7 +67,22 @@ const SharedLayout = () => {
               horizontal: "right",
             }}
           >
-            The content of the Popover.
+            <Card sx={{ maxWidth: 345 }}>
+              <CardHeader
+                avatar={
+                  <Avatar src={user?.photoURL}>{user?.displayName[0]}</Avatar>
+                }
+                title={user?.displayName}
+                subheader={user?.email}
+              />
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="flex-end"
+              >
+                <Button onClick={handleClick}>Logout</Button>
+              </Box>
+            </Card>
           </Popover>
         </Toolbar>
       </AppBar>
