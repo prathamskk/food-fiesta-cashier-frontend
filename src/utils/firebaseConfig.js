@@ -11,7 +11,9 @@ import {
   doc,
   addDoc,
   serverTimestamp,
-  setDoc
+  setDoc,
+  where,
+  enableMultiTabIndexedDbPersistence
 } from "firebase/firestore";
 
 import {
@@ -71,6 +73,8 @@ export function getFirebase() {
   const services = initializeServices();
   if (!services.isConfigured) {
     connectToEmulators(services);
+
+    enableMultiTabIndexedDbPersistence(services.firestore);
     console.log("connected to emulators");
   }
   return services;
@@ -82,3 +86,28 @@ export function newOrder(data) {
   return newOrder(data)
 }
 
+
+
+export function streamOrders() {
+  const ORDERS_COLLECTION_ID = "orders";
+  const { firestore } = getFirebase()
+  const orderCol = collection(firestore, ORDERS_COLLECTION_ID);
+  const q = query(orderCol, where("payment_status", "==", "unpaid"), orderBy("order_placed_timestamp", "desc"));
+  const stream = (callback) => onSnapshot(q, snapshot => {
+    const orders = snapshot.docs.map(doc => {
+      return {
+        id: doc.id,
+        ...doc.data()
+      };
+    })
+
+    callback(orders);
+  });
+
+  const addMessage = (message) => addDoc(messagesCol, {
+    timestamp: serverTimestamp(),
+    ...message,
+  });
+
+  return { stream, addMessage };
+}

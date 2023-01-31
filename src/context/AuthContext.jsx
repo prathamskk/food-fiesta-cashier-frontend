@@ -63,9 +63,9 @@ function AuthProvider({ children }) {
         navigate("/login");
       }
 
-      if (location.pathname.toLowerCase() === "/login") {
-        navigate("/");
-      }
+      // if (location.pathname.toLowerCase() === "/login") {
+      //   navigate("/");
+      // }
       setUser(user);
     });
     return () => unsubscribe();

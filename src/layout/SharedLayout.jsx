@@ -80,7 +80,7 @@ const SharedLayout = () => {
                 justifyContent="flex-end"
                 alignItems="flex-end"
               >
-                <Button onClick={handleClick}>Logout</Button>
+                <Button onClick={handleSignOut}>Logout</Button>
               </Box>
             </Card>
           </Popover>
