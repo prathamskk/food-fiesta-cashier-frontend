@@ -26,6 +26,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CollapsibleTable from "../components/OrderTable";
+import OrderCard from "../components/OrderCard";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -37,7 +38,7 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: { md: 3 }, py: 2 }}>{children}</Box>}
     </div>
   );
 }
@@ -55,7 +56,6 @@ const Dashboard = () => {
   useEffect(() => {
     const { stream } = streamOrders();
     const unsub = stream((orders) => {
-      console.log(orders);
       setOrders(orders);
     });
 
@@ -84,9 +84,10 @@ const Dashboard = () => {
         variant="fullWidth"
         aria-label="full width tabs example"
       >
-        <Tab label="Payment Pending" {...a11yProps(0)} />
-        <Tab label="Paid" {...a11yProps(1)} />
-        <Tab label="Cancelled" {...a11yProps(2)} />
+        <Tab label="Search" {...a11yProps(0)} />
+        <Tab label="Payment Pending" {...a11yProps(1)} />
+        <Tab label="Paid" {...a11yProps(2)} />
+        <Tab label="Cancelled" {...a11yProps(3)} />
       </Tabs>
       <SwipeableViews
         axis={theme.direction === "rtl" ? "x-reverse" : "x"}
@@ -94,72 +95,27 @@ const Dashboard = () => {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
+          Nothing Here Yet
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
           <Grid
             container
-            spacing={{ xs: 2, md: 3 }}
-            columns={{ xs: 2, sm: 8, md: 12 }}
+            spacing={{ xs: 2 }}
+            columns={{ xs: 12, sm: 12, md: 12, lg: 12 }}
           >
             {orders.map((order, index) => {
               return (
-                <Grid item xs={2} sm={4} md={4} key={index}>
-                  <Card sx={{ minWidth: 275 }} variant="outlined">
-                    <CardHeader
-                      sx={{
-                        bgcolor: "primary.main",
-                        color: "common.white",
-                        textOverflow: "ellipsis",
-                      }}
-                      title={
-                        <Stack
-                          justifyContent="flex-start"
-                          alignItems="flex-start"
-                        >
-                          <Container maxWidth={false} disableGutters>
-                            <Stack
-                              direction="row"
-                              justifyContent="space-between"
-                              alignItems="flex-start"
-                            >
-                              <Button color="inherit">#{order.order_id}</Button>
-                              <Button
-                                color="inherit"
-                                startIcon={<MoneyOffIcon />}
-                              >
-                                UNPAID
-                              </Button>
-                            </Stack>
-                          </Container>
-
-                          <Typography variant="body2">
-                            {order.user_info.name}
-                          </Typography>
-                          <Typography variant="caption">
-                            {order.user_info.email}
-                          </Typography>
-                        </Stack>
-                      }
-                    />
-                    <CardContent>
-                      <CollapsibleTable rows={order} />
-                      <Typography
-                        sx={{ fontSize: 14 }}
-                        color="text.secondary"
-                        gutterBottom
-                      ></Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small">Learn More</Button>
-                    </CardActions>
-                  </Card>
+                <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                  <OrderCard order={order} />
                 </Grid>
               );
             })}
           </Grid>
         </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-          Item Two
-        </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
+          Item Three
+        </TabPanel>
+        <TabPanel value={value} index={3} dir={theme.direction}>
           Item Three
         </TabPanel>
       </SwipeableViews>
