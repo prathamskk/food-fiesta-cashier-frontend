@@ -1,4 +1,4 @@
-import * as React from 'react';
+// import * as React  from 'react';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -12,14 +12,17 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useEffect, useState } from 'react';
 
 function createData(
   stall_name,
+  status,
   subtotal
-  
+
 ) {
   return {
     stall_name,
+    status,
     subtotal,
     item_list: [
       {
@@ -37,11 +40,10 @@ function createData(
 }
 
 function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
-
+  const { row, stallNo, subtotal } = props;
+  const [open, setOpen] = useState(false);
   return (
-    <React.Fragment>
+    <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
           <IconButton
@@ -53,9 +55,10 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.stall_name}
+          {stallNo}
         </TableCell>
-        <TableCell align="right">{row.subtotal}</TableCell>
+        <TableCell align="right">{row.status}</TableCell>
+        <TableCell align="right">{subtotal.subTotalObj[stallNo]}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -74,37 +77,55 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.item_list.map((itemRow) => (
-                    <TableRow key={itemRow.date}>
-                      <TableCell component="th" scope="row">
-                        {itemRow.date}
-                      </TableCell>
-                      <TableCell>{itemRow.qty}</TableCell>
-                      <TableCell align="right">{itemRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {itemRow.amount * itemRow.qty}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {Object.keys(row.items_ordered).map((itemRow, index) => {
+                    const items = row.items_ordered[itemRow]
+                    return (
+                      <TableRow key={index}>
+                        <TableCell component="th" scope="row">
+                          {items.name}
+                        </TableCell>
+                        <TableCell>{items.qty}</TableCell>
+                        <TableCell align="right">{items.price}</TableCell>
+                        <TableCell align="right">
+                          {items.price * items.qty}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 
-const rows = [
-  createData('stall1', 159),
-  createData('stall2', 237),
-  createData('stall3', 262),
-  createData('stall4', 305),
-  createData('stall5', 356),
-];
 
-export default function CollapsibleTable() {
+
+function createTotalObj(rows) {
+  const totalObj = {}
+  let Total = 0
+  for (let stallid in rows.stall_order) {
+    let subtotal = 0;
+    for (let itemid in rows.stall_order[stallid]["items_ordered"]) {
+      subtotal += rows.stall_order[stallid]["items_ordered"][itemid].price * rows.stall_order[stallid]["items_ordered"][itemid].qty
+    }
+
+    totalObj[stallid] = subtotal
+    Total += subtotal
+
+
+  }
+  return {
+    Total: Total,
+    subTotalObj: totalObj
+  }
+}
+
+export default function CollapsibleTable(props) {
+  const { rows } = props
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -112,13 +133,34 @@ export default function CollapsibleTable() {
           <TableRow>
             <TableCell />
             <TableCell>Stall</TableCell>
+            <TableCell align="right">Status</TableCell>
             <TableCell align="right">Subtotal</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.stall_name} row={row} />
-          ))}
+          {Object.keys(rows.stall_order).map((row, index) => {
+            const rowObject = rows.stall_order[row];
+            return (
+              <Row key={row} stallNo={row} row={rowObject} subtotal={createTotalObj(rows)} />
+            )
+          })}
+          <TableRow>
+            <TableCell />
+            <TableCell />
+            <TableCell align="right">
+              <Typography
+                variant='h6'>
+                Total:
+              </Typography>
+            </TableCell>
+            <TableCell align="right">
+            <Typography
+                variant='h6'>
+                {createTotalObj(rows).Total}
+              </Typography>
+              
+              </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>

@@ -55,6 +55,7 @@ const Dashboard = () => {
   useEffect(() => {
     const { stream } = streamOrders();
     const unsub = stream((orders) => {
+      console.log(orders);
       setOrders(orders);
     });
 
@@ -99,7 +100,6 @@ const Dashboard = () => {
             columns={{ xs: 2, sm: 8, md: 12 }}
           >
             {orders.map((order, index) => {
-              console.log(order);
               return (
                 <Grid item xs={2} sm={4} md={4} key={index}>
                   <Card sx={{ minWidth: 275 }} variant="outlined">
@@ -140,43 +140,7 @@ const Dashboard = () => {
                       }
                     />
                     <CardContent>
-                      <CollapsibleTable />
-                      {Object.keys(order.stall_order).map((stallid, index) => {
-                        const order_list = order.stall_order[stallid];
-                        console.log(order_list);
-                        return (
-                          <Accordion>
-                            <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
-                            >
-                              <Typography>{stallid}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              {Object.keys(order_list.items_ordered).map(
-                                (itemid, index) => {
-                                  const items_list = order_list.items_ordered;
-                                  console.log(items_list);
-                                  return (
-                                    <Stack>
-                                      <Typography>
-                                        {items_list[itemid].name}
-                                      </Typography>
-                                      <Typography>
-                                        {items_list[itemid].qty}
-                                      </Typography>
-                                      <Typography>
-                                        {items_list[itemid].price}
-                                      </Typography>
-                                    </Stack>
-                                  );
-                                }
-                              )}
-                            </AccordionDetails>
-                          </Accordion>
-                        );
-                      })}
+                      <CollapsibleTable rows={order} />
                       <Typography
                         sx={{ fontSize: 14 }}
                         color="text.secondary"
