@@ -1,5 +1,3 @@
-
-
 import { initializeApp, getApps } from "firebase/app";
 import {
   getFirestore,
@@ -13,13 +11,16 @@ import {
   serverTimestamp,
   setDoc,
   where,
-  enableMultiTabIndexedDbPersistence
+  enableMultiTabIndexedDbPersistence,
+  limit,
+  startAt,
+  startAfter,
 } from "firebase/firestore";
 
 import {
   connectFunctionsEmulator,
   getFunctions,
-  httpsCallable
+  httpsCallable,
 } from "firebase/functions";
 
 import {
@@ -29,10 +30,8 @@ import {
   signInWithPhoneNumber,
   onAuthStateChanged,
   reauthenticateWithRedirect,
-  RecaptchaVerifier
+  RecaptchaVerifier,
 } from "firebase/auth";
-
-
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -50,13 +49,12 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID,
 };
 
-
 function initializeServices() {
   const isConfigured = getApps().length > 0;
   const firebaseApp = initializeApp(firebaseConfig);
   const firestore = getFirestore(firebaseApp);
   const auth = getAuth(firebaseApp);
-  const functions = getFunctions(firebaseApp)
+  const functions = getFunctions(firebaseApp);
   return { firebaseApp, firestore, auth, isConfigured, functions };
 }
 
@@ -82,32 +80,64 @@ export function getFirebase() {
 
 export function newOrder(data) {
   const { functions } = getFirebase();
-  const newOrder = httpsCallable(functions, 'newOrder');
-  return newOrder(data)
+  const newOrder = httpsCallable(functions, "newOrder");
+  return newOrder(data);
 }
-
-
 
 export function streamOrders() {
   const ORDERS_COLLECTION_ID = "orders";
-  const { firestore } = getFirebase()
+  const { firestore } = getFirebase();
   const orderCol = collection(firestore, ORDERS_COLLECTION_ID);
-  const q = query(orderCol, where("payment_status", "==", "unpaid"), orderBy("order_placed_timestamp", "desc"));
-  const stream = (callback) => onSnapshot(q, snapshot => {
-    const orders = snapshot.docs.map(doc => {
-      return {
-        id: doc.id,
-        ...doc.data()
-      };
-    })
+  const stream = (callback) => {
+    const q = query(
+      orderCol,
+      where("payment_status", "==", "unpaid"),
+      orderBy("order_placed_timestamp", "asc"),
+      limit(15)
+    );
 
-    callback(orders);
-  });
+    return onSnapshot(q, (snapshot) => {
+      const orders = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
 
-  const addMessage = (message) => addDoc(messagesCol, {
-    timestamp: serverTimestamp(),
-    ...message,
-  });
+      callback(orders);
+    });
+  };
 
-  return { stream, addMessage };
+  const loadMore = (documentId, callback) => {
+    if (documentId === undefined) {
+      console.log("undefined");
+      return callback([]);
+    }
+
+    console.log(documentId);
+
+    const lastDocRef = doc(orderCol, documentId);
+    console.log(lastDocRef);
+    const q2 = query(
+      orderCol,
+      where("payment_status", "==", "unpaid"),
+      orderBy("order_placed_timestamp", "asc"),
+      startAfter(lastDocRef),
+      limit(15)
+    );
+
+    return onSnapshot(q2, (snapshot) => {
+      console.log(snapshot);
+      const orders = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      callback(orders);
+    });
+  };
+
+  return { stream, loadMore };
 }

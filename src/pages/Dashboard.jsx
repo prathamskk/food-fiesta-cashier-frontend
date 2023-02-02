@@ -62,6 +62,17 @@ const Dashboard = () => {
     return () => unsub();
   }, []);
 
+  const handleLoadMore = () => {
+    const { loadMore } = streamOrders();
+    if (orders.length <= 1) {
+      return;
+    }
+
+    loadMore(orders[orders.length-1]?.id, (newOrders) => {
+      console.log(newOrders);
+      setOrders([...newOrders, ...orders]);
+    });
+  };
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
 
@@ -111,6 +122,13 @@ const Dashboard = () => {
               );
             })}
           </Grid>
+          <Stack alignItems="center" justifyContent="center" py={4}>
+            {orders.length === 15 ? (
+              <Button onClick={handleLoadMore}>Load More</Button>
+            ) : (
+              ""
+            )}
+          </Stack>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
           Item Three
