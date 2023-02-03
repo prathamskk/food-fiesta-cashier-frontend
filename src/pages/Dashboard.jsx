@@ -51,8 +51,26 @@ function a11yProps(index) {
 }
 
 const Dashboard = () => {
+  const [searchValue, setSearchValue] = useState();
   const { menuList } = useMenu();
   const [orders, setOrders] = useState([]);
+  const [searchOrders, setSearchOrders] = useState([]);
+
+  useEffect(() => {
+    if (searchValue?.length !== 6) {
+      return
+    }
+    const { streamSearch } = streamOrders();
+
+    const unsub = streamSearch(searchValue, (orders) => {
+      setSearchOrders(orders);
+    });
+
+    return () => unsub();
+
+
+  }, [searchValue])
+
   useEffect(() => {
     const { stream } = streamOrders();
     const unsub = stream((orders) => {
@@ -75,7 +93,7 @@ const Dashboard = () => {
 
   return (
     <Box>
-      <SearchBar />
+      <SearchBar handleChangeIndex={handleChangeIndex} searchValue={searchValue} setSearchValue={setSearchValue} />
       <Tabs
         value={value}
         onChange={handleChange}
@@ -95,7 +113,14 @@ const Dashboard = () => {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
-          Nothing Here Yet
+          {searchValue}
+          {searchOrders.map((order, index) => {
+            return (
+              <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                <OrderCard order={order} />
+              </Grid>
+            );
+          })}
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           <Grid
@@ -111,6 +136,7 @@ const Dashboard = () => {
               );
             })}
           </Grid>
+
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
           Item Three

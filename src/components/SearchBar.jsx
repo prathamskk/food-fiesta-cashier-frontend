@@ -13,19 +13,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from "@mui/system";
-const SearchBar = () => {
-    const [open, setOpen] = useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
+const SearchBar = (props) => {
+    const { handleChangeIndex, searchValue, setSearchValue } = props
+    const handleChange = (event) => {
+        setSearchValue(event.target.value);
+        handleChangeIndex(0)
     };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
     return (
-        (<Box>
+        (
             <Paper
                 component="form"
                 sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}
@@ -33,9 +28,11 @@ const SearchBar = () => {
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
                     placeholder="Search Order"
-                    inputProps={{ 'aria-label': 'search google maps' }}
+                    inputProps={{ 'aria-label': 'search order id' }}
+                    value={searchValue}
+                    onChange={handleChange}
                 />
-                <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleClickOpen}>
+                <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={() => { handleChangeIndex(0) }}>
                     <SearchIcon />
                 </IconButton>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
@@ -43,29 +40,6 @@ const SearchBar = () => {
                     <CameraAltIcon />
                 </IconButton>
             </Paper>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Subscribe</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        To subscribe to this website, please enter your email address here. We
-                        will send updates occasionally.
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleClose}>Subscribe</Button>
-                </DialogActions>
-            </Dialog>
-        </Box>
         )
     )
 }
