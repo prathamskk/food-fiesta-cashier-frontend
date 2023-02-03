@@ -159,22 +159,34 @@ const Dashboard = () => {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          {paidorders.map((order, index) => {
-            return (
-              <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
-                <OrderCard order={order} />
-              </Grid>
-            );
-          })}
+        <Grid
+            container
+            spacing={{ xs: 2 }}
+            columns={{ xs: 12, sm: 12, md: 12, lg: 12 }}
+          >
+            {paidorders.map((order, index) => {
+              return (
+                <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                  <OrderCard order={order} />
+                </Grid>
+              );
+            })}
+          </Grid>
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
-          {cancelorders.map((order, index) => {
-            return (
-              <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
-                <OrderCard order={order} />
-              </Grid>
-            );
-          })}
+        <Grid
+            container
+            spacing={{ xs: 2 }}
+            columns={{ xs: 12, sm: 12, md: 12, lg: 12 }}
+          >
+            {cancelorders.map((order, index) => {
+              return (
+                <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                  <OrderCard order={order} />
+                </Grid>
+              );
+            })}
+          </Grid>
         </TabPanel>
       </SwipeableViews>
     </Box>
