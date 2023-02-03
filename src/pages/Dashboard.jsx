@@ -27,6 +27,8 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CollapsibleTable from "../components/OrderTable";
 import OrderCard from "../components/OrderCard";
+import QrReader from "react-qr-scanner";
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -58,7 +60,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (searchValue?.length !== 6) {
-      return
+      return;
     }
     const { streamSearch } = streamOrders();
 
@@ -67,9 +69,7 @@ const Dashboard = () => {
     });
 
     return () => unsub();
-
-
-  }, [searchValue])
+  }, [searchValue]);
 
   useEffect(() => {
     const { stream } = streamOrders();
@@ -86,8 +86,8 @@ const Dashboard = () => {
       return;
     }
 
-    loadMore(orders[orders.length-1]?.id, (newOrders) => {
-      console.log(newOrders);
+    loadMore(orders[orders.length - 1]?.id, (newOrders) => {
+      // console.log(newOrders);
       setOrders([...newOrders, ...orders]);
     });
   };
@@ -101,10 +101,29 @@ const Dashboard = () => {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
+  // const [error, setError] = useState();
+  const handleError = (errorobj) => {
+    // setError(errorobj);
+    console.log(errorobj);
+  };
+  const [result, setResult] = useState();
+  const handleScan = (resultobj) => {
+    // console.log(resultobj);
+
+    if (resultobj === null) {
+      return;
+    }
+    setValue(0);
+    setSearchValue(resultobj?.text);
+  };
 
   return (
     <Box>
-      <SearchBar handleChangeIndex={handleChangeIndex} searchValue={searchValue} setSearchValue={setSearchValue} />
+      <SearchBar
+        handleChangeIndex={handleChangeIndex}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+      />
       <Tabs
         value={value}
         onChange={handleChange}
@@ -149,7 +168,7 @@ const Dashboard = () => {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          Item Three
+          <QrReader onError={handleError} onScan={handleScan} />
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
           Item Three
