@@ -108,10 +108,9 @@ export function streamOrders() {
     });
   };
 
-
   const streamSearch = (orderId, callback) => {
     if (orderId === undefined) {
-      return
+      return;
     }
 
     console.log(orderId);
@@ -134,6 +133,46 @@ export function streamOrders() {
     });
   };
 
+  const streamPaid = (callback) => {
+    const q = query(
+      orderCol,
+      where("payment_status", "==", "paid"),
+      orderBy("order_placed_timestamp", "asc"),
+      limit(15)
+    );
+
+    return onSnapshot(q, (snapshot) => {
+      const orders = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      callback(orders);
+    });
+  };
+
+  const streamCancelled = (callback) => {
+    const q = query(
+      orderCol,
+      where("payment_status", "==", "cancelled"),
+      orderBy("order_placed_timestamp", "asc"),
+      limit(15)
+    );
+
+    return onSnapshot(q, (snapshot) => {
+      const orders = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      callback(orders);
+    });
+  };
+  
   // const loadMore = (documentId, callback) => {
   //   if (documentId === undefined) {
   //     console.log("undefined");
@@ -158,5 +197,5 @@ export function streamOrders() {
   //   });
   // };
 
-  return { stream, streamSearch };
+  return { stream, streamSearch, streamPaid, streamCancelled };
 }

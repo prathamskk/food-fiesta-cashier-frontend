@@ -27,7 +27,6 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CollapsibleTable from "../components/OrderTable";
 import OrderCard from "../components/OrderCard";
-import QrReader from "react-qr-scanner";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -56,6 +55,8 @@ const Dashboard = () => {
   const [searchValue, setSearchValue] = useState();
   const { menuList } = useMenu();
   const [orders, setOrders] = useState([]);
+  const [paidorders, setPaidOrders] = useState([]);
+  const [cancelorders, setCancelOrders] = useState([]);
   const [searchOrders, setSearchOrders] = useState([]);
 
   useEffect(() => {
@@ -80,17 +81,24 @@ const Dashboard = () => {
     return () => unsub();
   }, []);
 
-  const handleLoadMore = () => {
-    const { loadMore } = streamOrders();
-    if (orders.length <= 1) {
-      return;
-    }
-
-    loadMore(orders[orders.length - 1]?.id, (newOrders) => {
-      // console.log(newOrders);
-      setOrders([...newOrders, ...orders]);
+  useEffect(() => {
+    const { streamPaid } = streamOrders();
+    const unsub = streamPaid((orders) => {
+      setPaidOrders(orders);
     });
-  };
+
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const { streamCancelled } = streamOrders();
+    const unsub = streamCancelled((orders) => {
+      setCancelOrders(orders);
+    });
+
+    return () => unsub();
+  }, []);
+
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
 
@@ -101,22 +109,6 @@ const Dashboard = () => {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-  // const [error, setError] = useState();
-  const handleError = (errorobj) => {
-    // setError(errorobj);
-    console.log(errorobj);
-  };
-  const [result, setResult] = useState();
-  const handleScan = (resultobj) => {
-    // console.log(resultobj);
-
-    if (resultobj === null) {
-      return;
-    }
-    setValue(0);
-    setSearchValue(resultobj?.text);
-  };
-
   return (
     <Box>
       <SearchBar
@@ -143,7 +135,6 @@ const Dashboard = () => {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
-          {searchValue}
           {searchOrders.map((order, index) => {
             return (
               <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
@@ -168,10 +159,22 @@ const Dashboard = () => {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <QrReader onError={handleError} onScan={handleScan} />
+          {paidorders.map((order, index) => {
+            return (
+              <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                <OrderCard order={order} />
+              </Grid>
+            );
+          })}
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
-          Item Three
+          {cancelorders.map((order, index) => {
+            return (
+              <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                <OrderCard order={order} />
+              </Grid>
+            );
+          })}
         </TabPanel>
       </SwipeableViews>
     </Box>

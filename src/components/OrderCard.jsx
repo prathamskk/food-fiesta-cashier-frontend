@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Container, Stack } from "@mui/system";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MoneyOffIcon from "@mui/icons-material/MoneyOff";
 import CollapsibleTable from "./OrderTable";
 import { useMenu } from "../context/MenuContext";
@@ -53,15 +53,35 @@ const OrderCard = (props) => {
     }
     return true;
   }
+  const [cardSX, setCardSX] = useState({
+    bgcolor: "primary.main",
+    color: "common.white",
+    textOverflow: "ellipsis",
+  });
+  useEffect(() => {
+    if (order.payment_status === "unpaid") {
+      setCardSX({
+        bgcolor: "primary.main",
+        color: "common.white",
+        textOverflow: "ellipsis",
+      });
+    }
+
+    if (order.payment_status === "paid") {
+      setCardSX({
+        bgcolor: "secondary.main",
+        color: "common.white",
+        textOverflow: "ellipsis",
+      });
+    }
+
+    return () => {};
+  }, [order]);
 
   return (
     <Card sx={{ minWidth: 275 }} variant="outlined">
       <CardHeader
-        sx={{
-          bgcolor: "primary.main",
-          color: "common.white",
-          textOverflow: "ellipsis",
-        }}
+        sx={cardSX}
         title={
           <Stack justifyContent="flex-start" alignItems="flex-start">
             <Container maxWidth={false} disableGutters>
@@ -72,7 +92,7 @@ const OrderCard = (props) => {
               >
                 <Button color="inherit">#{order.order_id}</Button>
                 <Button color="inherit" startIcon={<MoneyOffIcon />}>
-                  UNPAID
+                  {order.payment_status}
                 </Button>
               </Stack>
             </Container>
@@ -87,7 +107,7 @@ const OrderCard = (props) => {
       </CardContent>
       <CardActions>
         <Button
-          disabled={!checkAvail(order)}
+          disabled={!checkAvail(order) || order.payment_status !== "unpaid"}
           onClick={handleClickOpen}
           variant="contained"
           color="secondary"
