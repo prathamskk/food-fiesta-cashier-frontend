@@ -159,7 +159,7 @@ const Dashboard = () => {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-        <Grid
+          <Grid
             container
             spacing={{ xs: 2 }}
             columns={{ xs: 12, sm: 12, md: 12, lg: 12 }}
@@ -174,7 +174,7 @@ const Dashboard = () => {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
-        <Grid
+          <Grid
             container
             spacing={{ xs: 2 }}
             columns={{ xs: 12, sm: 12, md: 12, lg: 12 }}

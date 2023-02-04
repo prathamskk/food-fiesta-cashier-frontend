@@ -116,8 +116,7 @@ export function streamOrders() {
     console.log(orderId);
     const q = query(
       orderCol,
-      where("order_id", "==", parseInt(orderId)),
-      orderBy("order_placed_timestamp", "asc")
+      where("order_id", "==", parseInt(orderId))
     );
 
     return onSnapshot(q, (snapshot) => {
@@ -172,7 +171,7 @@ export function streamOrders() {
       callback(orders);
     });
   };
-  
+
   // const loadMore = (documentId, callback) => {
   //   if (documentId === undefined) {
   //     console.log("undefined");

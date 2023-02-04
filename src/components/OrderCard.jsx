@@ -75,7 +75,7 @@ const OrderCard = (props) => {
       });
     }
 
-    return () => {};
+    return () => { };
   }, [order]);
 
   return (
