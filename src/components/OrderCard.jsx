@@ -12,13 +12,14 @@ import {
   Typography,
 } from "@mui/material";
 import { Container, Stack } from "@mui/system";
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import React, { useEffect, useState } from "react";
 import MoneyOffIcon from "@mui/icons-material/MoneyOff";
 import CollapsibleTable from "./OrderTable";
 import { useMenu } from "../context/MenuContext";
 import { getFirebase } from "../utils/firebaseConfig";
 import { doc, updateDoc } from "firebase/firestore";
-
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 const OrderCard = (props) => {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -34,7 +35,7 @@ const OrderCard = (props) => {
     const updatedOrder = order;
     updatedOrder.payment_status = "paid";
     delete updatedOrder.id;
-    for(let stall_id in updatedOrder.stall_order){
+    for (let stall_id in updatedOrder.stall_order) {
       updatedOrder.stall_order[stall_id].status = "inprogress"
     }
     await updateDoc(docRef, updatedOrder);
@@ -64,16 +65,17 @@ const OrderCard = (props) => {
   useEffect(() => {
     if (order.payment_status === "unpaid") {
       setCardSX({
-        bgcolor: "primary.main",
-        color: "common.white",
+        // background-color: #f8d7da;
+        bgcolor: "#f8d7da",
+        color: "#721c24",
         textOverflow: "ellipsis",
       });
     }
 
     if (order.payment_status === "paid") {
       setCardSX({
-        bgcolor: "secondary.main",
-        color: "common.white",
+        bgcolor: "#d4edda",
+        color: "#155724",
         textOverflow: "ellipsis",
       });
     }
@@ -94,7 +96,7 @@ const OrderCard = (props) => {
                 alignItems="flex-start"
               >
                 <Button color="inherit">#{order.order_id}</Button>
-                <Button color="inherit" startIcon={<MoneyOffIcon />}>
+                <Button color="inherit" startIcon={order.payment_status === "unpaid" ? <MoneyOffIcon /> : order.payment_status === "paid" ? <CurrencyRupeeIcon /> : <DoDisturbIcon />}>
                   {order.payment_status}
                 </Button>
               </Stack>

@@ -13,7 +13,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box } from "@mui/system";
-import { Modal } from "@mui/material";
+import { MenuItem, Modal, Select } from "@mui/material";
 import QrReader from "react-qr-scanner";
 
 const SearchBar = (props) => {
@@ -47,12 +47,14 @@ const SearchBar = (props) => {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    // width: 400,
+    width: "100%",
     bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
   };
+  const previewStyle = {
+    height: "auto",
+    width: "100%",
+  }
+
   return (
     <Box>
       <Paper
@@ -93,7 +95,7 @@ const SearchBar = (props) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <QrReader onError={handleError} onScan={handleScan} />
+          <QrReader onError={handleError} onScan={handleScan} style={previewStyle} />
         </Box>
       </Modal>
     </Box>
