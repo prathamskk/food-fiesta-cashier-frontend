@@ -34,8 +34,11 @@ const OrderCard = (props) => {
     const updatedOrder = order;
     updatedOrder.payment_status = "paid";
     delete updatedOrder.id;
-    setOpen(false);
+    for(let stall_id in updatedOrder.stall_order){
+      updatedOrder.stall_order[stall_id].status = "inprogress"
+    }
     await updateDoc(docRef, updatedOrder);
+    setOpen(false);
     console.log(order);
   };
   const { order } = props;
