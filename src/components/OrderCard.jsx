@@ -57,36 +57,24 @@ const OrderCard = (props) => {
     }
     return true;
   }
-  const [cardSX, setCardSX] = useState({
-    bgcolor: "primary.main",
-    color: "common.white",
+
+  const paidstyleobject = {
+    bgcolor: "#d4edda",
+    color: "#155724",
     textOverflow: "ellipsis",
-  });
-  useEffect(() => {
-    if (order.payment_status === "unpaid") {
-      setCardSX({
-        // background-color: #f8d7da;
-        bgcolor: "#f8d7da",
-        color: "#721c24",
-        textOverflow: "ellipsis",
-      });
-    }
+  }
 
-    if (order.payment_status === "paid") {
-      setCardSX({
-        bgcolor: "#d4edda",
-        color: "#155724",
-        textOverflow: "ellipsis",
-      });
-    }
+  const unpaidstyleobject = {
+    bgcolor: "#f8d7da",
+    color: "#721c24",
+    textOverflow: "ellipsis",
+  }
 
-    return () => { };
-  }, [order]);
 
   return (
     <Card sx={{ minWidth: 275 }} variant="outlined">
       <CardHeader
-        sx={cardSX}
+        sx={order.payment_status === "unpaid" ||order.payment_status === "cancelled" ? unpaidstyleobject : paidstyleobject}
         title={
           <Stack justifyContent="flex-start" alignItems="flex-start">
             <Container maxWidth={false} disableGutters>
