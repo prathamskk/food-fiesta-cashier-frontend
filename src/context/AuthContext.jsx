@@ -28,8 +28,33 @@ function AuthProvider({ children }) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
+        auth.currentUser.getIdTokenResult()
+          .then((idTokenResult) => {
+            // Confirm the user is an Admin.
+            console.log(idTokenResult.claims.roles);
+            if (idTokenResult.claims.roles == undefined) {
+              console.log("Please Sign In again!!");
+              console.log("unauthorized");
+              navigate("/login");
+              return 0
+            } else
+              if ([
+                "cashier"
+              ].includes(idTokenResult.claims.roles[0])) {
+                // Show admin UI.
+                user.role = idTokenResult.claims.roles[0]
+                setUser(user);
 
-        setUser(user);
+              } else {
+
+                console.log("Please Sign In again!!");
+                console.log("unauthorized");
+                navigate("/login");
+
+              }
+          })
+
+
       })
       .then(() => {
         navigate("/");
@@ -63,6 +88,31 @@ function AuthProvider({ children }) {
         navigate("/login");
       }
 
+      user.getIdTokenResult()
+        .then((idTokenResult) => {
+          // Confirm the user is an Admin.
+          console.log(idTokenResult.claims.roles);
+          if (idTokenResult.claims.roles == undefined) {
+            console.log("Please Sign In again!!");
+            console.log("unauthorized");
+            navigate("/login");
+            return 0
+          } else
+            if ([
+              "cashier"
+            ].includes(idTokenResult.claims.roles[0])) {
+              // Show admin UI.
+              user.role = idTokenResult.claims.roles[0]
+              setUser(user);
+
+            } else {
+
+              console.log("Please Sign In again!!");
+              console.log("unauthorized");
+              navigate("/login");
+
+            }
+        })
       // if (location.pathname.toLowerCase() === "/login") {
       //   navigate("/");
       // }
