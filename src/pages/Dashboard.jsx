@@ -121,7 +121,8 @@ const Dashboard = () => {
         onChange={handleChange}
         indicatorColor="secondary"
         textColor="inherit"
-        variant="fullWidth"
+        variant="scrollable"
+        scrollButtons="auto"
         aria-label="full width tabs example"
       >
         <Tab label="Search" {...a11yProps(0)} />

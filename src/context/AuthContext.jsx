@@ -86,37 +86,39 @@ function AuthProvider({ children }) {
       if (!user) {
         console.log("Please Sign In again!!");
         navigate("/login");
-      }
+      } else {
 
-      user.getIdTokenResult()
-        .then((idTokenResult) => {
-          // Confirm the user is an Admin.
-          console.log(idTokenResult.claims.roles);
-          if (idTokenResult.claims.roles == undefined) {
-            console.log("Please Sign In again!!");
-            console.log("unauthorized");
-            navigate("/login");
-            return 0
-          } else
-            if ([
-              "cashier"
-            ].includes(idTokenResult.claims.roles[0])) {
-              // Show admin UI.
-              user.role = idTokenResult.claims.roles[0]
-              setUser(user);
 
-            } else {
-
+        user.getIdTokenResult()
+          .then((idTokenResult) => {
+            // Confirm the user is an Admin.
+            console.log(idTokenResult.claims.roles);
+            if (idTokenResult.claims.roles == undefined) {
               console.log("Please Sign In again!!");
               console.log("unauthorized");
               navigate("/login");
+              return 0
+            } else
+              if ([
+                "cashier"
+              ].includes(idTokenResult.claims.roles[0])) {
+                // Show admin UI.
+                user.role = idTokenResult.claims.roles[0]
+                setUser(user);
 
-            }
-        })
+              } else {
+
+                console.log("Please Sign In again!!");
+                console.log("unauthorized");
+                navigate("/login");
+
+                setUser(user);
+              }
+          })
+      }
       // if (location.pathname.toLowerCase() === "/login") {
       //   navigate("/");
       // }
-      setUser(user);
     });
     return () => unsubscribe();
   }, []);
