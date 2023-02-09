@@ -130,6 +130,7 @@ const OrderCard = (props) => {
             <Button
               onClick={() => {
                 handleSubmit(order);
+                
               }}
               autoFocus
               disabled={!checkAvail(order)}
