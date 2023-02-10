@@ -100,7 +100,7 @@ const OrderCard = (props) => {
       </CardContent>
       <CardActions>
         <Button
-          disabled={!checkAvail(order) || order.payment_status !== "unpaid"}
+          disabled={order.payment_status !== "unpaid"}
           onClick={handleClickOpen}
           variant="contained"
           color="secondary"
