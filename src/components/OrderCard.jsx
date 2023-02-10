@@ -92,6 +92,7 @@ const OrderCard = (props) => {
 
             <Typography variant="body2">{order.user_info.name}</Typography>
             <Typography variant="caption">{order.user_info.email}</Typography>
+            <Typography variant="caption">{order.user_info.phoneNumber}</Typography>
           </Stack>
         }
       />
