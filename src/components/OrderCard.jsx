@@ -22,8 +22,10 @@ import { doc, updateDoc } from "firebase/firestore";
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 const OrderCard = (props) => {
   const [open, setOpen] = useState(false);
+  const [disable, setDisable] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
+    setDisable(false)
   };
 
   const handleClose = () => {
@@ -74,7 +76,7 @@ const OrderCard = (props) => {
   return (
     <Card sx={{ minWidth: 275 }} variant="outlined">
       <CardHeader
-        sx={order.payment_status === "unpaid" ||order.payment_status === "cancelled" ? unpaidstyleobject : paidstyleobject}
+        sx={order.payment_status === "unpaid" || order.payment_status === "cancelled" ? unpaidstyleobject : paidstyleobject}
         title={
           <Stack justifyContent="flex-start" alignItems="flex-start">
             <Container maxWidth={false} disableGutters>
@@ -130,11 +132,12 @@ const OrderCard = (props) => {
             <Button onClick={handleClose}>Disagree</Button>
             <Button
               onClick={() => {
+                setDisable(true)
                 handleSubmit(order);
-                
+
               }}
               autoFocus
-              disabled={!checkAvail(order)}
+              disabled={!checkAvail(order) || disable}
             >
               Agree
             </Button>
